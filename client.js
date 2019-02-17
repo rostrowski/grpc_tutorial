@@ -11,23 +11,13 @@ const client = new grpcObject.ChatService(SERVER_URI, grpc.credentials.createIns
 
 const user = 'Rafal'
 
-const chatStream = client.joinChat({ user })
+const chatStream = client.sendMessage({ message: '', user })
 
 chatStream.on('data', data => {
   console.log(data)
 })
 
-client.sendMessage({ message: `Node.js sucks`, user }, (error, response) => {
-  if (error) {
-    console.error(error)
-  }
-})
-
 let i = 0
 setInterval(() => {
-  client.sendMessage({ message: `Message no. ${i++}`, user }, (error, response) => {
-    if (error) {
-      console.error(error)
-    }
-  })
+  chatStream.write({ message: `Message no. ${i++}`, user })
 }, 2000)

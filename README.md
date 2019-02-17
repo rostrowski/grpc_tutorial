@@ -1,1 +1,1 @@
-Basic version + sample error threw from server + keeping users' count and removing users.
+'joinChat' rpc method removed, instead used 'sendMessage' with bidirectional streaming, where the first message acts as joining the chat.

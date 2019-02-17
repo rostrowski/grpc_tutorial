@@ -13,39 +13,27 @@ server.bind(SERVER_URI, grpc.ServerCredentials.createInsecure())
 
 let users = []
 
-const joinChat = call => {
-  users.push(call)
+const sendMessage = call => {
+  if (!users.includes(call)) {
+    users.push(call)
 
-  call.on('cancelled', () => {
-    users = users.filter(user => user !== call)
-    console.log(`User has left. Users in chat: ${users.length}`)
-  })
+    call.on('data', data => {
+      const { message, user } = data
 
-  console.log(`User ${call.request.user} has joined - users in chat: ${users.length}`)
-}
-
-const sendMessage = (call, callback) => {
-  const { message, user } = call.request
-
-  if (message === 'Node.js sucks') {
-    return callback(new Error('Nieprawda.'))
+      console.log(`New message from ${user}: ${message}`)
+      
+      const messageToSend = {
+        message,
+        user,
+        timestamp: Math.floor(new Date().getTime() / 1000),
+      }
+    
+      users.forEach(user => user.write(messageToSend))
+    })
   }
-
-  console.log(`New message from ${user}: ${message}`)
-
-  const messageToSend = {
-    message,
-    user,
-    timestamp: Math.floor(new Date().getTime() / 1000),
-  }
-
-  users.forEach(user => user.write(messageToSend))
-
-  callback(null, {})
 }
 
 server.addService(grpcObject.ChatService.service, {
-  joinChat,
   sendMessage,
 })
 
