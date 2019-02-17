@@ -11,16 +11,25 @@ const server = new grpc.Server()
 
 server.bind(SERVER_URI, grpc.ServerCredentials.createInsecure())
 
-const users = []
+let users = []
 
 const joinChat = call => {
-  console.log(`User ${call.request.user} has joined.`)
-
   users.push(call)
+
+  call.on('cancelled', () => {
+    users = users.filter(user => user !== call)
+    console.log(`User has left. Users in chat: ${users.length}`)
+  })
+
+  console.log(`User ${call.request.user} has joined - users in chat: ${users.length}`)
 }
 
 const sendMessage = (call, callback) => {
   const { message, user } = call.request
+
+  if (message === 'Node.js sucks') {
+    return callback(new Error('Nieprawda.'))
+  }
 
   console.log(`New message from ${user}: ${message}`)
 

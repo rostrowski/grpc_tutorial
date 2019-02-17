@@ -1,1 +1,1 @@
-Basic version - joining chat, receiving messages as a stream, sending messages.
+Basic version + sample error threw from server + keeping users' count and removing users.
