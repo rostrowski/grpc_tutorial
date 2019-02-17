@@ -1,0 +1,1 @@
+Basic version - joining chat, receiving messages as a stream, sending messages.
